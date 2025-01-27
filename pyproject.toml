@@ -5,6 +5,7 @@ description = "Simulate the vertical fish distribution influenced by physical st
 authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
 license = "MSC"
 readme = "README.md"
+
 packages = [
     { include = "verfishd" }
 ]
