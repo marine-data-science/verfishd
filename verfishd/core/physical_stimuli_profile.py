@@ -3,7 +3,7 @@ from os import PathLike
 
 import numpy
 import pandas as pd
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 
 class StimuliProfile:

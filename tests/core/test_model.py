@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from unittest.mock import Mock
-from VerFishD import VerFishDModel, PhysicalFactor, StimuliProfile
+from verfishd  import VerFishDModel, PhysicalFactor, StimuliProfile
 
 
 @pytest.fixture

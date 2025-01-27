@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
-from VerFishD import StimuliProfile
+from verfishd import StimuliProfile
 
 
 @pytest.fixture

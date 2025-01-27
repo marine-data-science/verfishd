@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from VerFishD import StimuliProfile
+from verfishd import StimuliProfile
 
 
 @pytest.fixture

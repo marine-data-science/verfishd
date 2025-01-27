@@ -1,5 +1,5 @@
 import pytest
-from VerFishD import PhysicalFactor
+from verfishd import PhysicalFactor
 
 
 @pytest.fixture
