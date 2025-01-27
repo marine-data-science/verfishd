@@ -1,3 +1,3 @@
 # VerFishD
 
-A library to simulate the vertical fish distribution inside the water column.
+Simulate the vertical fish distribution inside the water column influenced by physical stimuli
