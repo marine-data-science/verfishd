@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "verfishd"
+version = "0.1.0"
+description = "Simulate the vertical fish distribution influenced by physical stimuli"
+authors = ["Jan Meischner <jan.meischner@googlemail.com>"]
+license = "MSC"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.3"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
