@@ -13,6 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -23,9 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
+      - name: Set Poetry Working Directory
+        run: poetry config virtualenvs.in-project true
+
       - name: Install dependencies with Poetry
         run: |
-          poetry install --with dev --no-root
+          poetry install --with dev
 
       - name: Run pytest
         run: |
