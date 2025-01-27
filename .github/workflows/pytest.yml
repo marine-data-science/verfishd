@@ -33,9 +33,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
-      - name: Set Poetry Working Directory
-        run: poetry config virtualenvs.in-project true
-
       - name: Install dependencies with Poetry
         run: |
           poetry install --with dev
