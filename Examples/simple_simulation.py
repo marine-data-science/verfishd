@@ -1,4 +1,5 @@
-from VerFishD import VerFishDModel, PhysicalFactor, StimuliProfile
+import pandas as pd
+from verfishd import VerFishDModel, PhysicalFactor, StimuliProfile
 
 
 # Define a custom PhysicalFactor
@@ -26,17 +27,18 @@ class Temperature(PhysicalFactor):
 
 
 # Create a Stimuli Profile including depth and temperature
-stimuli = StimuliProfile(['depth', 'temperature'])
-stimuli.add_entry(0.0, {'temperature': 7.0})
-stimuli.add_entry(1.0, {'temperature': 6.0})
-stimuli.add_entry(2.0, {'temperature': 5.0})
-stimuli.add_entry(3.0, {'temperature': 4.5})
-stimuli.add_entry(4.0, {'temperature': 4.0})
-stimuli.add_entry(5.0, {'temperature': 3.9})
+stimuli = StimuliProfile(pd.DataFrame({ 'depth': [0.0, 1.0, 2.0, 3.0, 4.0, 5.0], 'temperature': [7.0, 6.0, 5.0, 5.4, 4.0, 3.9] }))
 
 # Create a VerFishDModel with the temperature factor
 temperature_factor = Temperature(1.0)
-migration_speed = lambda x: x*2
+
+# Define a very simple migration speed function
+migration_speed = lambda x: x
+
+# Create the model
 model = VerFishDModel(stimuli, migration_speed, [temperature_factor])
 
-print(model.steps['t=0'])
+# Simulate the model for 30 steps
+model.simulate(30)
+
+print(model.steps['t=30'])
