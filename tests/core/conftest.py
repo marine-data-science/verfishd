@@ -1,3 +1,3 @@
-from fixtures.temperature_factor_fixtures import temperature_factor_fixture
+from fixtures.physical_factor_fixtures import temperature_factor_fixture, pressure_factor_fixture
 from fixtures.physical_stimuli_fixtures import temperature_stimuli_fixture
 from fixtures.migration_speed_fixtures import migration_speed_fixture

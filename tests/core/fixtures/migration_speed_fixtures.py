@@ -5,4 +5,4 @@ import pytest
 
 @pytest.fixture
 def migration_speed_fixture():
-    return Mock()
+    return lambda x: x

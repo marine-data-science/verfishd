@@ -12,15 +12,13 @@ class ExampleFactor(PhysicalFactor):
 
 def test_throw_when_weight_is_not_number():
     with pytest.raises(TypeError):
-        # noinspection PyTypeChecker
-        ExampleFactor("not a number")
+        ExampleFactor("not a number") # type: ignore
 
 
 def test_throw_when_calculate_is_called_with_non_number():
     factor = ExampleFactor(1.0)
     with pytest.raises(TypeError):
-        # noinspection PyTypeChecker
-        factor.calculate("not a number")
+        factor.calculate("not a number") # type: ignore
 
 
 def test_return_a_value_when_calculate_is_called():
