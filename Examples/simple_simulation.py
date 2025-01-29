@@ -27,7 +27,11 @@ class Temperature(PhysicalFactor):
 
 
 # Create a Stimuli Profile including depth and temperature
-stimuli = StimuliProfile(pd.DataFrame({ 'depth': [0.0, 1.0, 2.0, 3.0, 4.0, 5.0], 'temperature': [7.0, 6.0, 5.0, 5.4, 4.0, 3.9] }))
+stimule_dataframe = pd.DataFrame({
+    'depth': [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+    'temperature': [7.0, 6.0, 5.0, 5.4, 4.0, 3.9]
+})
+stimuli = StimuliProfile(stimule_dataframe)
 
 # Create the temperature factor
 temperature_factor = Temperature(1.0)
