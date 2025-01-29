@@ -30,8 +30,12 @@ class StimuliProfile:
         """
         Add a row of data, indexed by 'depth'.
 
-        :param depth: The depth value for this row.
-        :param data: A dictionary of column values (excluding 'depth').
+        Parameters
+        ----------
+        depth: float
+            The depth value for this row.
+        data: Dict[str, Any]
+            A dictionary of column values (excluding 'depth').
         """
         if not all(col in self.columns for col in data.keys()):
             raise ValueError(f"Invalid columns in data. Expected columns: {self.columns}")
@@ -43,9 +47,22 @@ class StimuliProfile:
         """
         Read stimuli data from a file and populate the table.
 
-        :param file_path: The path to the file.
-        :param file_type: The file type ('csv', 'excel'). Default is 'csv'.
-        :raises ValueError: If the file type is unsupported.
+        Parameters
+        ----------
+        file_path: str
+            The path to the file.
+        file_type: str
+            The file type ('csv', 'excel'). Default is 'csv'.
+
+        Raise
+        -----
+        ValueError
+            If the file type is unsupported.
+
+        Returns
+        -------
+        StimuliProfile
+            The StimuliProfile instance.
         """
         if file_type == "csv":
             df = pd.read_csv(file_path)
