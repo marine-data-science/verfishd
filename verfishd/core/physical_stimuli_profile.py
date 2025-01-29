@@ -1,7 +1,6 @@
 from __future__ import annotations
 from os import PathLike
 
-import numpy
 import pandas as pd
 from typing import Dict, Any
 
@@ -9,7 +8,7 @@ from typing import Dict, Any
 class StimuliProfile:
     """A class for managing tabular stimuli data with a required 'depth' index."""
 
-    columns: numpy.array
+    columns: pd.Index
     data: pd.DataFrame
 
     def __init__(self, data: pd.DataFrame):
