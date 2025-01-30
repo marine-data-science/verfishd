@@ -4,14 +4,12 @@ on:
   release:
     types: [published]
 
-permissions:
-  id-token: write  # Required for OpenID Connect
-  contents: read
-
 jobs:
-  publish:
-    name: Build and Publish to PyPI
+  build:
+    name: Build the package
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.upload.outputs.artifact-name }}
 
     steps:
       - name: Checkout repository
@@ -39,10 +37,27 @@ jobs:
       - name: Build package
         run: poetry build
 
-      - name: Mint token
-        id: mint
-        uses: tschm/token-mint-action@v1.0.3
+      - name: Upload built package
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/*
 
-      - name: Publish the package with poetry
-        run: |
-          poetry publish -u __token__ -p '${{ steps.mint.outputs.api-token }}'
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # only used for OIDC Auth
+      contents: read
+
+    steps:
+      - name: Download built package
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
