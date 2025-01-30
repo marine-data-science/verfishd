@@ -3,6 +3,7 @@ from .physical_stimuli_profile import StimuliProfile
 from collections.abc import  Callable
 from itertools import repeat
 from matplotlib import pyplot as plt
+from os import PathLike
 import pandas as pd
 
 
@@ -12,6 +13,7 @@ class VerFishDModel:
     """
 
     steps: pd.DataFrame
+    result: pd.Series
 
     def __init__(
             self,
@@ -141,16 +143,17 @@ class VerFishDModel:
             steps_list.append(next_step)
 
         # efficient creation of the final DataFrame
+        # TODO: Should I throw away all steps and only keep the simulation result?
         self.steps = pd.concat(steps_list, axis=1)
         self.steps.columns = [f"t={t}" for t in range(number_of_steps + 1)]
+        self.result = self.steps.iloc[:, -1]
+        self.result.name = "Fish Probability"
 
     def plot(self, dry_out: bool = False) -> None:
         """
         Plot the simulation result.
         """
-        latest_simulation_step = self.steps.columns[-1]
-        simulation_result= self.steps[latest_simulation_step]
-
+        simulation_result = self.result
         if dry_out:
             # TODO: This is a temporary fix
             simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
@@ -164,3 +167,14 @@ class VerFishDModel:
         plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
         plt.show()
+
+    def save_result(self, file_path: str | PathLike[str]) -> None:
+        """
+        Save the simulation result to a file.
+
+        Parameters
+        ----------
+        file_path: str
+            The path to the file.
+        """
+        self.result.to_csv(file_path)

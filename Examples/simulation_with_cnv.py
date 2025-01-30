@@ -33,5 +33,6 @@ factors = [Temperature(0.48), Oxygen(0.52)]
 model = VerFishDModel(profile, migration_speed_with_demographic_noise, factors)
 
 model.simulate(100)
+model.save_result("Examples/results.csv")
 
 model.plot(True)
