@@ -18,7 +18,7 @@ All these values are combined in the `VerFishDModel` which is the main class to 
 The simulation is then triggered by calling the `simulate` method with the number of time steps to simulate.
 
 ## Dependencies
-To work with .cnv files of CTD casts, the library uses the `seabird` library.
+To work with .cnv files of CTD casts, the library uses the [`seabird`](https://github.com/castelao/seabird) library.
 The profile can be loaded by calling `StimuliProfile.read_from_cnv(file_path)`.
 
 ## Example
