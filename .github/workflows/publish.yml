@@ -39,12 +39,10 @@ jobs:
       - name: Build package
         run: poetry build
 
-      - name: Debug OIDC Token
-        run: |
-          curl -H "Authorization: Bearer $(jq -r '.id_token' $ACTIONS_ID_TOKEN_REQUEST_URL)" \
-          $ACTIONS_ID_TOKEN_REQUEST_URL || echo "Failed to fetch OIDC token"
+      - name: Mint token
+        id: mint
+        uses: tschm/token-mint-action@v1.0.3
 
-      - name: Publish to PyPI using OpenID Connect
-        env:
-          POETRY_PYPI_TOKEN_PYPI: pypi
-        run: poetry publish
+      - name: Publish the package with poetry
+        run: |
+          poetry publish -u __token__ -p '${{ steps.mint.outputs.api-token }}'
