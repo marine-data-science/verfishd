@@ -144,18 +144,19 @@ class VerFishDModel:
         self.steps = pd.concat(steps_list, axis=1)
         self.steps.columns = [f"t={t}" for t in range(number_of_steps + 1)]
 
-    def plot(self) -> None:
+    def plot(self, dry_out: bool = False) -> None:
         """
         Plot the simulation result.
         """
         latest_simulation_step = self.steps.columns[-1]
         simulation_result= self.steps[latest_simulation_step]
 
-        # TODO: This is a temporary fix
-        simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
+        if dry_out:
+            # TODO: This is a temporary fix
+            simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
 
         plt.figure(figsize=(8, 5))
-        plt.plot(simulation_result.values, -simulation_result.index, label="Depth Values", color='b')
+        plt.plot(simulation_result.to_numpy(), -simulation_result.index, label="Depth Values", color='b')
         plt.ylabel("Depth")
         plt.xlabel("Fish Probability")
         plt.title("Simulation Result")

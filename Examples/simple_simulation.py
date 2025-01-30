@@ -45,4 +45,4 @@ model = VerFishDModel(stimuli, migration_speed, [temperature_factor])
 # Simulate the model for 30 steps
 model.simulate(30)
 
-print(model.steps['t=30'])
+model.plot()

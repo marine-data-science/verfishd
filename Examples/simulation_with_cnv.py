@@ -1,5 +1,3 @@
-from matplotlib import pyplot as plt
-
 from verfishd import StimuliProfile, PhysicalFactor, migration_speed_with_demographic_noise, VerFishDModel
 
 profile = StimuliProfile.read_from_cnv("Examples/example.cnv")
@@ -36,4 +34,4 @@ model = VerFishDModel(profile, migration_speed_with_demographic_noise, factors)
 
 model.simulate(100)
 
-model.plot()
+model.plot(True)
