@@ -1,4 +1,5 @@
 from collections.abc import  Callable
+from itertools import repeat
 from .physical_factor import PhysicalFactor
 from .physical_stimuli_profile import StimuliProfile
 import pandas as pd
@@ -8,6 +9,8 @@ class VerFishDModel:
     """
     A class representing a model that manages multiple PhysicalFactors.
     """
+
+    steps: pd.DataFrame
 
     def __init__(
             self,
@@ -103,8 +106,12 @@ class VerFishDModel:
         number_of_steps: int, optional
             The number of steps to simulate the model for.
         """
-        for step in range(0, number_of_steps):
-            current = self.steps[f"t={step}"]
+        steps_list = [self.steps["t=0"]]
+
+        # using `repeat` is a tiny bit more efficient when using `range`
+        # because we do not need to create a `range-iterator`
+        for _ in repeat(None, number_of_steps):
+            current = steps_list[-1]
             next_step = pd.Series(0.0, index=current.index)
 
             for depth in current.index:
@@ -130,4 +137,16 @@ class VerFishDModel:
             if total_current > 0:
                 next_step = next_step / total_current * current.sum()
 
-            self.steps[f"t={step+1}"] = next_step
+            steps_list.append(next_step)
+
+        # efficient creation of the final DataFrame
+        self.steps = pd.concat(steps_list, axis=1)
+        self.steps.columns = [f"t={t}" for t in range(number_of_steps + 1)]
+
+    def plot(self) -> None:
+        """
+        Plot the simulation result.
+        """
+        # get latest simulation result from self.steps
+
+        raise NotImplementedError("Plotting is not yet implemented.")

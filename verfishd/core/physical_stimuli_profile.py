@@ -78,6 +78,7 @@ class StimuliProfile:
     def read_from_cnv(cls, file_path: str | PathLike[str]) -> StimuliProfile:
         """
         Read stimuli data from a CNV file and populate the table.
+        TODO: Pretty sure the .cnv data needs some love before it can be used here.
 
         Parameters
         ----------
