@@ -1,6 +1,6 @@
 from __future__ import annotations
 from os import PathLike
-
+from seabird import fCNV
 import pandas as pd
 from typing import Dict, Any
 
@@ -43,7 +43,7 @@ class StimuliProfile:
         self.data.loc[depth] = data
 
     @classmethod
-    def read_from_file(cls, file_path: str | PathLike[str], file_type: str = "csv") -> StimuliProfile:
+    def read_from_tabular_file(cls, file_path: str | PathLike[str], file_type: str = "csv") -> StimuliProfile:
         """
         Read stimuli data from a file and populate the table.
 
@@ -70,5 +70,37 @@ class StimuliProfile:
             df = pd.read_excel(file_path)
         else:
             raise ValueError("Unsupported file type. Use 'csv' or 'excel'.")
+
+        return cls(df)
+
+
+    @classmethod
+    def read_from_cnv(cls, file_path: str | PathLike[str]) -> StimuliProfile:
+        """
+        Read stimuli data from a CNV file and populate the table.
+
+        Parameters
+        ----------
+        file_path: str
+            The path to the CNV file.
+
+        Raise
+        -----
+        ValueError
+            If no data is found in the file.
+
+        Returns
+        -------
+        StimuliProfile
+            The StimuliProfile instance
+        """
+        data = fCNV(file_path).as_DataFrame()
+        if data is None:
+            raise ValueError("No data found in file.")
+
+        if 'depth' not in data.columns:
+            data['depth'] = data.index
+
+        df = data
 
         return cls(df)

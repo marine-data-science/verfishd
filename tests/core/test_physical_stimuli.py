@@ -37,5 +37,5 @@ def test_throw_an_error_when_initialized_with_an_dataframe_without_depth():
 
 def test_create_a_profile_from_file():
     csv_file = Path(__file__).parent / "fixtures" / "temperature_stimuli.csv"
-    stimuli_profile = StimuliProfile.read_from_file(csv_file)
+    stimuli_profile = StimuliProfile.read_from_tabular_file(csv_file)
     assert isinstance(stimuli_profile, StimuliProfile), "StimuliProfile should be created from a file"

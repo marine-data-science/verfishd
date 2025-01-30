@@ -65,7 +65,7 @@ class VerFishDModel:
             raise TypeError("All elements in 'factors' must be instances of PhysicalFactor.")
 
         if not all(factor.name in stimuli_profile.columns for factor in factors):
-            raise ValueError("All factor names must be present in the stimuli profile columns.")
+            raise ValueError(f"All factor names must be present in the stimuli profile columns. Present columns: {stimuli_profile.columns}")
 
         total_weight = sum(factor.weight for factor in factors)
         if not abs(total_weight - 1.0) < 1e-6:  # floating point comparison
