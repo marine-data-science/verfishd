@@ -14,6 +14,10 @@ The sign of this function determines the direction of the movement and the absol
 All these values are combined in the `VerFishDModel` which is the main class to run the simulation.
 The simulation is then triggered by calling the `simulate` method with the number of time steps to simulate.
 
+## Dependencies
+To work with .cnv files of CTD casts, the library uses the `seabird` library.
+The profile can be loaded by calling `StimuliProfile.read_from_cnv(file_path)`.
+
 ## Example
 
 https://github.com/marine-data-science/verfishd/blob/752e3501ce62ffe1b563d25e3a7783d529d1aba2/Examples/simple_simulation.py#L5-L46

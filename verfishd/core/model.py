@@ -1,7 +1,8 @@
-from collections.abc import  Callable
-from itertools import repeat
 from .physical_factor import PhysicalFactor
 from .physical_stimuli_profile import StimuliProfile
+from collections.abc import  Callable
+from itertools import repeat
+from matplotlib import pyplot as plt
 import pandas as pd
 
 
@@ -147,6 +148,18 @@ class VerFishDModel:
         """
         Plot the simulation result.
         """
-        # get latest simulation result from self.steps
+        latest_simulation_step = self.steps.columns[-1]
+        simulation_result= self.steps[latest_simulation_step]
 
-        raise NotImplementedError("Plotting is not yet implemented.")
+        # TODO: This is a temporary fix
+        simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(simulation_result.values, -simulation_result.index, label="Depth Values", color='b')
+        plt.ylabel("Depth")
+        plt.xlabel("Fish Probability")
+        plt.title("Simulation Result")
+        plt.legend()
+        plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+        plt.show()

@@ -36,15 +36,4 @@ model = VerFishDModel(profile, migration_speed_with_demographic_noise, factors)
 
 model.simulate(100)
 
-simulation_result= model.steps["t=100"]
-simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
-
-plt.figure(figsize=(8, 5))
-plt.plot(simulation_result.values, -simulation_result.index, label="Depth Values", color='b')
-plt.ylabel("Depth")
-plt.xlabel("Fish Probability")
-plt.title("Simulation Result")
-plt.legend()
-plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-
-plt.show()
+model.plot()
