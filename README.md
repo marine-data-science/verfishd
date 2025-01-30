@@ -2,11 +2,11 @@
   <img src="images/logo/square_logo.png" alt="Logo of VerFishD">
 </p>
 
-![PyPI - Version](https://img.shields.io/pypi/v/verfishd)
-![Successful Tests](https://github.com/marine-data-science/verfishd/actions/workflows/pytest.yml/badge.svg)
-
 **VerFishD** is a library to do vertical fish distribution simulations influenced by physical stimuli.
 It is still in development and not yet ready for production.
+
+![PyPI - Version](https://img.shields.io/pypi/v/verfishd)
+![Successful Tests](https://github.com/marine-data-science/verfishd/actions/workflows/pytest.yml/badge.svg)
 
 ## Concept
 The library uses `PhysicalFactor` which influence the movement of the fish.
