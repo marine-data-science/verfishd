@@ -42,6 +42,20 @@ class StimuliProfile:
 
         self.data.loc[depth] = data
 
+    def add_stimuli(self, stimuli: pd.Series) -> None:
+        """
+        Add a stimuli series to the table.
+
+        Parameters
+        ----------
+        stimuli: pd.Series
+            The stimuli series to add.
+        """
+        if not all(stimuli.index == self.data.index):
+            raise ValueError("Stimuli series 'depth' values must match the existing data.")
+
+        self.data = self.data.join(stimuli)
+
     @classmethod
     def read_from_tabular_file(cls, file_path: str | PathLike[str], file_type: str = "csv") -> StimuliProfile:
         """

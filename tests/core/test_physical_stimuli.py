@@ -8,7 +8,10 @@ from verfishd import StimuliProfile
 
 @pytest.fixture
 def dataframe_stimuli_fixture():
-    return pd.DataFrame({'depth': [0, 1, 2, 3, 4, 5], 'temperature': [7.0, 6.0, 5.0, 4.5, 4.0, 3.9]})
+    return pd.DataFrame({
+        'depth': [0, 1, 2, 3, 4, 5],
+        'temperature': [7.0, 6.0, 5.0, 4.5, 4.0, 3.9]
+    })
 
 
 def test_initialization_with_dataframe(dataframe_stimuli_fixture):
@@ -39,3 +42,19 @@ def test_create_a_profile_from_file():
     csv_file = Path(__file__).parent / "fixtures" / "temperature_stimuli.csv"
     stimuli_profile = StimuliProfile.read_from_tabular_file(csv_file)
     assert isinstance(stimuli_profile, StimuliProfile), "StimuliProfile should be created from a file"
+
+
+@pytest.mark.parametrize("stimuli, expected_exception", [
+    (pd.Series([0.0, 0.1, 0.2, 0.3, 0.4, 0.5], index=[0, 1, 2, 3, 4, 5], name='oxygen'), None),  # Valid case
+    (pd.Series([0.0, 0.1, 0.2, 0.3, 0.4, 0.5], index=[0, 1, 2, 3, 5, 6], name='oxygen'), ValueError("Stimuli series 'depth' values must match the existing data.")),  # Mismatched index
+])
+def test_add_stimuli(dataframe_stimuli_fixture, stimuli, expected_exception):
+    stimuli_profile = StimuliProfile(dataframe_stimuli_fixture)
+    if expected_exception:
+        with pytest.raises(type(expected_exception)) as exec_info:
+            stimuli_profile.add_stimuli(stimuli)
+        assert str(exec_info.value) == str(expected_exception)
+    else:
+        stimuli_profile.add_stimuli(stimuli)
+        assert 'oxygen' in stimuli_profile.data.columns
+        assert (stimuli_profile.data['oxygen'] == stimuli).all()
