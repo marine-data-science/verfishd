@@ -1,0 +1,45 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write  # Required for OpenID Connect
+  contents: read
+
+jobs:
+  publish:
+    name: Build and Publish to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Extract version from GitHub Release
+        run: |
+          VERSION=${{ github.event.release.tag_name }}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Update pyproject.toml version
+        run: poetry version $VERSION
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build package
+        run: poetry build
+
+      - name: Publish to PyPI using OpenID Connect
+        env:
+          POETRY_PYPI_TOKEN_PYPI: __token__
+        run: poetry publish
