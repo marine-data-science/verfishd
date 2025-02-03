@@ -4,6 +4,7 @@ from collections.abc import  Callable
 from itertools import repeat
 from matplotlib import pyplot as plt
 from os import PathLike
+import numpy as np
 import pandas as pd
 
 
@@ -102,50 +103,57 @@ class VerFishDModel:
 
     def simulate(self, number_of_steps: int = 1000):
         """
-        Simulate the model for a given number of steps.
+        Simulate the model for a given number of steps, continuing from the last recorded step.
 
         Parameters
         ----------
         number_of_steps: int, optional
             The number of steps to simulate the model for.
         """
-        steps_list = [self.steps["t=0"]]
+        if not hasattr(self, 'steps') or self.steps.empty:
+            raise ValueError("Simulation cannot continue without initial state.")
 
-        # using `repeat` is a tiny bit more efficient when using `range`
-        # because we do not need to create a `range-iterator`
+        # Determine starting point
+        last_step_index = self.steps.shape[1] - 1
+        steps_list = [self.steps.iloc[:, -1].copy()]
+
         for _ in repeat(None, number_of_steps):
             current = steps_list[-1]
             next_step = pd.Series(0.0, index=current.index)
 
-            for depth in current.index:
+            # Compute migration changes first
+            migrated_up = np.zeros_like(current.values)
+            migrated_down = np.zeros_like(current.values)
+
+            for i, depth in enumerate(current.index):
                 weight_sum = self.weighted_sum[depth]
                 migration_speed = self.migration_speed(float(weight_sum))
 
-                if migration_speed > 0 and depth - 1 in current.index:
-                    # move upwards
-                    migrated_value = migration_speed * current[depth]
-                    next_step[depth] += current[depth] - migrated_value
-                    next_step[depth - 1] += migrated_value
-                elif migration_speed < 0 and depth + 1 in current.index:
-                    # move downwards
-                    migrated_value = abs(migration_speed) * current[depth]
-                    next_step[depth] += current[depth] - migrated_value
-                    next_step[depth + 1] += migrated_value
-                else:
-                    # no migration
-                    next_step[depth] += current[depth]
+                if migration_speed > 0 and i > 0:  # Move up
+                    migrated_value = migration_speed * current.iloc[i]
+                    migrated_up[i - 1] += migrated_value
+                    migrated_up[i] -= migrated_value
+                elif migration_speed < 0 and i < len(current) - 1:  # Move down
+                    migrated_value = abs(migration_speed) * current.iloc[i]
+                    migrated_down[i + 1] += migrated_value
+                    migrated_down[i] -= migrated_value
 
-            # normalize the overall mass
+            # Apply migration
+            next_step += current + migrated_up + migrated_down
+
+            # Normalize total mass to conserve population
             total_current = next_step.sum()
             if total_current > 0:
-                next_step = next_step / total_current * current.sum()
+                next_step *= current.sum() / total_current
 
             steps_list.append(next_step)
 
-        # efficient creation of the final DataFrame
-        # TODO: Should I throw away all steps and only keep the simulation result?
-        self.steps = pd.concat(steps_list, axis=1)
-        self.steps.columns = [f"t={t}" for t in range(number_of_steps + 1)]
+        # Append results to existing DataFrame
+        new_steps = pd.concat(steps_list[1:], axis=1)
+        new_steps.columns = [f"t={t}" for t in range(last_step_index + 1, last_step_index + number_of_steps + 1)]
+
+        self.steps = pd.concat([self.steps, new_steps], axis=1)
+
         self.result = self.steps.iloc[:, -1]
         self.result.name = "Fish Probability"
 
