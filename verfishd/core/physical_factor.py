@@ -42,6 +42,8 @@ class PhysicalFactor(ABC):
         """
         Abstract method for the actual calculation, to be implemented by subclasses.
 
+        The result of this method must be between -1 and 1 to normalize the resulting fish movements.
+
         Parameters
         ----------
         value : float
