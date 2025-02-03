@@ -117,6 +117,9 @@ class VerFishDModel:
         last_step_index = self.steps.shape[1] - 1
         steps_list = [self.steps.iloc[:, -1].copy()]
 
+        # Precompute migration speeds for all depths
+        migration_speeds = np.vectorize(self.migration_speed)(self.weighted_sum.values)
+
         for _ in repeat(None, number_of_steps):
             current = steps_list[-1]
             next_step = pd.Series(0.0, index=current.index)
@@ -125,18 +128,16 @@ class VerFishDModel:
             migrated_up = np.zeros_like(current.values)
             migrated_down = np.zeros_like(current.values)
 
-            for i, depth in enumerate(current.index):
-                weight_sum = self.weighted_sum[depth]
-                migration_speed = self.migration_speed(float(weight_sum))
+            up_mask = (migration_speeds > 0)
+            down_mask = (migration_speeds < 0)
 
-                if migration_speed > 0 and i > 0:  # Move up
-                    migrated_value = migration_speed * current.iloc[i]
-                    migrated_up[i - 1] += migrated_value
-                    migrated_up[i] -= migrated_value
-                elif migration_speed < 0 and i < len(current) - 1:  # Move down
-                    migrated_value = abs(migration_speed) * current.iloc[i]
-                    migrated_down[i + 1] += migrated_value
-                    migrated_down[i] -= migrated_value
+            migrated_values = np.abs(migration_speeds) * current.values
+
+            migrated_up[:-1] += migrated_values[1:] * up_mask[1:]
+            migrated_up[1:] -= migrated_values[1:] * up_mask[1:]
+
+            migrated_down[1:] += migrated_values[:-1] * down_mask[:-1]
+            migrated_down[:-1] -= migrated_values[:-1] * down_mask[:-1]
 
             # Apply migration
             next_step += current + migrated_up + migrated_down
