@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/logo/square_logo.png" alt="Logo of VerFishD">
+  <img src="https://github.com/marine-data-science/verfishd/blob/main/images/logo/square_logo.png" alt="Logo of VerFishD">
 </p>
 
 **VerFishD** is a library to do vertical fish distribution simulations influenced by physical stimuli.
