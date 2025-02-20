@@ -1,5 +1,6 @@
 import pandas as pd
 from verfishd import VerFishDModel, PhysicalFactor, StimuliProfile
+from matplotlib import pyplot as plt
 
 
 # Define a custom PhysicalFactor
@@ -43,6 +44,8 @@ migration_speed = lambda x: x
 model = VerFishDModel('Example', stimuli, migration_speed, [temperature_factor])
 
 # Simulate the model for 30 steps
-model.simulate(30)
+model.simulate(800)
 
 model.plot()
+
+plt.show()
