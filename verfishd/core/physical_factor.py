@@ -17,6 +17,7 @@ class PhysicalFactor(ABC):
             raise TypeError("Weight must be a number (int or float).")
         self.weight = weight
         self.name = name
+        self.display_name = name.replace('_', ' ').capitalize()
 
     def calculate(self, value: float) -> float:
         """

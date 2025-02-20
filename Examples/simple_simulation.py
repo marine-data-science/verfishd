@@ -40,7 +40,7 @@ temperature_factor = Temperature(1.0)
 migration_speed = lambda x: x
 
 # Create the model
-model = VerFishDModel(stimuli, migration_speed, [temperature_factor])
+model = VerFishDModel('Example', stimuli, migration_speed, [temperature_factor])
 
 # Simulate the model for 30 steps
 model.simulate(30)

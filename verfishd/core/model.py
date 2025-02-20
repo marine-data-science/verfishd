@@ -1,11 +1,16 @@
+import matplotlib.cm as cm
+import numpy as np
+import pandas as pd
+
 from .physical_factor import PhysicalFactor
 from .physical_stimuli_profile import StimuliProfile
 from collections.abc import  Callable
 from itertools import repeat
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
 from os import PathLike
-import numpy as np
-import pandas as pd
+from rich import print
+from typing import List, cast
 
 
 class VerFishDModel:
@@ -13,11 +18,13 @@ class VerFishDModel:
     A class representing a model that manages multiple PhysicalFactors.
     """
 
+    name: str
     steps: pd.DataFrame
     result: pd.Series
 
     def __init__(
             self,
+            name: str,
             stimuli_profile: StimuliProfile,
             migration_speed: Callable[[float], float],
             factors: list[PhysicalFactor]
@@ -39,6 +46,7 @@ class VerFishDModel:
         factors : list of PhysicalFactor, optional
             A list of PhysicalFactor instances (optional).
         """
+        self.name = name
         self.migration_speed = migration_speed
         self.__check_factors(factors, stimuli_profile)
         self.__init_steps()
@@ -69,13 +77,17 @@ class VerFishDModel:
             If the sum of all factor weights is not equal to 1.
         """
         if not all(isinstance(factor, PhysicalFactor) for factor in factors):
+            print("[red]All elements in 'factors' must be instances of PhysicalFactor.[/red]")
             raise TypeError("All elements in 'factors' must be instances of PhysicalFactor.")
 
         if not all(factor.name in stimuli_profile.columns for factor in factors):
+            column_list = '\n'.join(stimuli_profile.columns.map('- {}'.format))
+            print(f"[red]All factor names must be present in the stimuli profile columns.\nPresent columns:\n[bold]{column_list}[/bold][/red]")
             raise ValueError(f"All factor names must be present in the stimuli profile columns. Present columns: {stimuli_profile.columns}")
 
         total_weight = sum(factor.weight for factor in factors)
         if not abs(total_weight - 1.0) < 1e-6:  # floating point comparison
+            print(f"[red]The sum of all factor weights must be 1.0, but got {total_weight:.6f}.[/red]")
             raise ValueError(f"The sum of all factor weights must be 1.0, but got {total_weight:.6f}.")
 
         self.factors = factors
@@ -158,26 +170,115 @@ class VerFishDModel:
         self.result = self.steps.iloc[:, -1]
         self.result.name = "Fish Probability"
 
-    def plot(self, dry_out: bool = False) -> None:
+    def plot(self) -> List[Axes]:
+        """
+        Plot the simulation results including the stimuli profile and evaluation function.
+        """
+        axs: List[ Axes ]
+
+
+        _, axs = plt.subplots(1, 3, figsize=(12, 8), )
+
+        # Plot Simulation Result
+        self.plot_simulation_result(axs[0])
+
+        # Plot Stimuli Profile
+        self.plot_stimuli(axs[1])
+
+        # Plot Evaluation Function
+        self.plot_evaluation_function(axs[2])
+
+        return axs
+
+    def plot_simulation_result(self, ax: Axes | None = None) -> Axes | None:
         """
         Plot the simulation result.
         """
+        if ax is None:
+            ax = plt.gca()
+
         simulation_result = self.result
-        if dry_out:
-            # TODO: This is a temporary fix
-            simulation_result = simulation_result[simulation_result >= 1e-3].iloc[::10] # pyright: ignore
+        points_for_plot = cast(pd.Series, simulation_result[simulation_result > 0.1])
+        ax.plot(points_for_plot.to_numpy() ,points_for_plot.index, 'o', label='_nolegend_', data=points_for_plot, markersize=4)
+        ax.plot(simulation_result.to_numpy(), simulation_result.index, label="Fish Probability")
+        ax.set_ylabel("Depth")
+        ax.set_xlabel("Fish Share")
+        ax.invert_yaxis()
+        ax.legend(loc="lower right")
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5)
+        ax.set_title("Vertical Fish Distribution")
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(simulation_result.to_numpy(), -simulation_result.index, label="Depth Values", color='b')
-        plt.ylabel("Depth")
-        plt.xlabel("Fish Probability")
-        plt.title("Simulation Result")
-        plt.legend()
-        plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+        return ax
 
-        plt.show()
 
-    def save_result(self, file_path: str | PathLike[str]) -> None:
+    def plot_stimuli(self, ax = None) -> Axes | None:
+        """
+        Plot the Stimuli Profile for the given Physical Factors
+        """
+        if ax is None:
+            ax = plt.gca()
+            ax.set_title("Stimuli Profile")
+            ax.set_ylabel("Depth")
+
+        lines = []
+        for factor in self.factors:
+            data = self.stimuli_profile.data[factor.name]
+
+            # Todo: Refactor this into the PhysicalFactor class instead of hardcoding it here
+            if factor.name == "light":
+                ax2 = ax.twiny()
+                line = ax2.plot(data, self.stimuli_profile.data.index, 'y--', label=factor.display_name, alpha=1)
+                ax2.set_xlabel("Light")
+
+                # Thresholds for the Light Factor -> Needs to go into the PhysicalFactor class
+                thresholds = [200, 10, 0.01]
+
+                # colour gradient from orange to yellow
+                colors = cm.get_cmap("autumn")(np.linspace(0, 0.5, len(thresholds)))
+
+                # First occurence of threshold values
+                for i, threshold in enumerate(thresholds):
+                    mask = data < threshold
+                    if mask.any():
+                        y_value = cast(float, self.stimuli_profile.data.index[mask.argmax()])
+                        threshold_line = ax2.axhline(y=y_value, color=colors[i], linestyle=':', alpha=0.7, label=fr"$\theta_l={threshold}$")
+                        line.append(threshold_line)
+
+            else:
+                line = ax.plot(data, self.stimuli_profile.data.index, linestyle="dashed", label=factor.display_name, alpha=1)
+
+            lines.extend(line)
+
+
+        ax.set_xlabel("Stimuli Value")
+        ax.invert_yaxis()
+        labs = [l.get_label() for l in lines]
+        ax.legend(lines, labs, loc="lower right")
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+        return ax
+
+    def plot_evaluation_function(self, ax: Axes | None = None) -> Axes | None:
+        """
+        Plot the evaluation function.
+        """
+        if ax is None:
+            ax = plt.gca()
+            ax.set_ylabel("Depth")
+
+        ax.plot(self.weighted_sum, self.weighted_sum.index, 'k-', linewidth=2, label="Evaluation Function (E)")
+        ax.set_title("Evaluation Function")
+        ax.invert_yaxis()
+        ax.set_xlabel("E")
+        ax.axvline(0, color='r', linestyle=':', alpha=0.5)
+        # ax.legend(loc="lower right")
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+        return ax
+
+
+
+    def save_result(self, file_path: str | PathLike[str] | None) -> None:
         """
         Save the simulation result to a file.
 
@@ -186,4 +287,7 @@ class VerFishDModel:
         file_path: str
             The path to the file.
         """
-        self.result.to_csv(file_path)
+        if file_path is None:
+            self.result.to_csv(f"{self.name}_simulation_result.csv")
+        else:
+            self.result.to_csv(file_path)

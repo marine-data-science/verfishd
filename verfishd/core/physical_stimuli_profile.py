@@ -2,7 +2,7 @@ from __future__ import annotations
 from os import PathLike
 from seabird import fCNV
 import pandas as pd
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class StimuliProfile:
@@ -10,8 +10,9 @@ class StimuliProfile:
 
     columns: pd.Index
     data: pd.DataFrame
+    cnv: Optional[fCNV]
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, cnv: Optional[fCNV] = None) -> None:
         """
         Initialize the StimuliTable with given data.
 
@@ -25,6 +26,7 @@ class StimuliProfile:
 
         self.columns = data.columns
         self.data = data.set_index('depth')
+        self.cnv = cnv
 
     def add_entry(self, depth: float, data: Dict[str, Any]) -> None:
         """
@@ -109,7 +111,8 @@ class StimuliProfile:
         StimuliProfile
             The StimuliProfile instance
         """
-        data = fCNV(file_path).as_DataFrame()
+        cnv = fCNV(file_path)
+        data = cnv.as_DataFrame()
         if data is None:
             raise ValueError("No data found in file.")
 
@@ -118,4 +121,4 @@ class StimuliProfile:
 
         df = data
 
-        return cls(df)
+        return cls(df, cnv)

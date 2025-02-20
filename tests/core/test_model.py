@@ -9,6 +9,7 @@ def verfishd_model_fixture(temperature_factor_fixture, temperature_stimuli_fixtu
     temperature_factor = temperature_factor_fixture(1.0)
     # Instantiate VerFishDModel
     model = VerFishDModel(
+        'test',
         stimuli_profile=temperature_stimuli_fixture,
         migration_speed=migration_speed_fixture,
         factors=[temperature_factor]
@@ -49,7 +50,7 @@ def test_factor_not_in_stimuli_profile_should_throw(temperature_stimuli_fixture,
     my_factor = ExampleFactor(1.0)
 
     with pytest.raises(ValueError):
-        VerFishDModel(temperature_stimuli_fixture, migration_speed_fixture, [my_factor])
+        VerFishDModel('test', temperature_stimuli_fixture, migration_speed_fixture, [my_factor])
 
 
 def test_throw_when_factor_is_not_subclass_of_PhysicalFactor(temperature_stimuli_fixture, migration_speed_fixture):
@@ -63,10 +64,11 @@ def test_throw_when_factor_is_not_subclass_of_PhysicalFactor(temperature_stimuli
     my_factor = ExampleFactor(1.0)
 
     with pytest.raises(TypeError):
-        VerFishDModel(temperature_stimuli_fixture, migration_speed_fixture, [my_factor]) # type: ignore
+        VerFishDModel('test', temperature_stimuli_fixture, migration_speed_fixture, [my_factor]) # type: ignore
 
 def test_weighted_sum_is_calculated_during_initialisation(temperature_stimuli_fixture, migration_speed_fixture, temperature_factor_fixture, pressure_factor_fixture):
     model = VerFishDModel(
+        'test',
         stimuli_profile=temperature_stimuli_fixture,
         migration_speed=migration_speed_fixture,
         factors=[temperature_factor_fixture(0.4), pressure_factor_fixture(0.6)]
@@ -81,6 +83,7 @@ def test_weighted_sum_is_calculated_during_initialisation(temperature_stimuli_fi
 def test_do_the_simulation_correctly_for_a_single_step(temperature_stimuli_fixture, migration_speed_fixture, temperature_factor_fixture):
     nr_of_steps = 1
     model = VerFishDModel(
+        'test',
         stimuli_profile=temperature_stimuli_fixture,
         migration_speed=migration_speed_fixture,
         factors=[temperature_factor_fixture(1.0)]
@@ -96,6 +99,7 @@ def test_do_the_simulation_correctly_for_a_single_step(temperature_stimuli_fixtu
 def test_convert_to_reasonable_result_for_a_several_step(temperature_stimuli_fixture, migration_speed_fixture, temperature_factor_fixture):
     nr_of_steps = 30
     model = VerFishDModel(
+        'test',
         stimuli_profile=temperature_stimuli_fixture,
         migration_speed=migration_speed_fixture,
         factors=[temperature_factor_fixture(1.0)]
