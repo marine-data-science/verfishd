@@ -30,3 +30,7 @@ https://github.com/marine-data-science/verfishd/blob/752e3501ce62ffe1b563d25e3a7
 ```bash
 pip install verfishd
 ```
+
+## Ideas for the future
+- [ ] Combine multiple Stimuli Profiles to do a simulation for a whole day
+- [ ] Algorithm to determine if simulation can end?
