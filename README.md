@@ -1,7 +1,7 @@
 # VerFishD
 <p align="center">
   <img src="/images/logo/square_logo.png" alt="Logo of VerFishD">
-</p<
+</p>
 
 **VerFishD** is a library for simulating vertical fish distribution under the influence of physical stimuli.
 
