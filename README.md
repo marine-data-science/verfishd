@@ -32,7 +32,7 @@ Here is a simple example of how to use VerFishD:
 
 https://github.com/marine-data-science/verfishd/blob/752e3501ce62ffe1b563d25e3a7783d529d1aba2/Examples/simple_simulation.py#L5-L46
 
-https://github.com/marine-data-science/verfishd/blob/752e3501ce62ffe1b563d25e3a7783d529d1aba2/Examples/simple_simulation.py#L5-L51
+https://github.com/marine-data-science/verfishd/blob/752e3501ce62ffe1b563d25e3a7783d529d1aba2/Examples/simple_simulation.py#L5-L50
 
 This example defines a temperature factor, creates a stimuli profile with temperature data over depth, initializes the model with this profile and factor, runs a simulation over 800 time steps, and finally plots the results.
 
