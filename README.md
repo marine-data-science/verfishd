@@ -1,5 +1,3 @@
-# VerFishD
-
 <div align="center">
   <img src="https://raw.githubusercontent.com/marine-data-science/verfishd/main/images/logo/square_logo.png" alt="Logo of VerFishD">
 </div>
