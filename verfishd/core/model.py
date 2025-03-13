@@ -102,16 +102,27 @@ class VerFishDModel:
         pd.Series
             The weighted sum for each depth.
         """
-        weighted_sum = pd.Series(0.0, index=self.stimuli_profile.data.index)
-
-        for depth, row in self.stimuli_profile.data.iterrows():
-            total = 0.0
-            for factor in self.factors:
-                value = row[factor.name]
-                total += factor.weight * factor.calculate(float(value))
-            weighted_sum[depth] = total
-
+        factor_influence = self.__calculate_factor_influence()
+        weighted_sum = factor_influence.sum(axis=1)
         return weighted_sum
+
+    def __calculate_factor_influence(self):
+        """
+        Calculate the influence of each factor on the weighted sum.
+
+        Returns
+        -------
+        pd.DataFrame
+            The influence of each factor on the weighted sum.
+        """
+        factor_influence = pd.DataFrame(index=self.stimuli_profile.data.index)
+
+        for factor in self.factors:
+            calc = np.vectorize(factor.calculate)
+            # Use `display_name` here to simplify the plot legend
+            factor_influence[factor.display_name] = calc(self.stimuli_profile.data[factor.name]) * factor.weight
+
+        return factor_influence
 
     def simulate(self, number_of_steps: int = 1000):
         """
@@ -266,12 +277,14 @@ class VerFishDModel:
             ax = plt.gca()
             ax.set_ylabel("Depth")
 
-        ax.plot(self.weighted_sum, self.weighted_sum.index, 'k-', linewidth=2, label="Evaluation Function (E)")
+        factor_influence = self.__calculate_factor_influence()
+
+        ax.plot(self.weighted_sum, self.weighted_sum.index, 'k-', linewidth=2, alpha=0.7, label="Evaluation Function (E)")
+        [ax.plot(factor_influence[col], factor_influence.index, linestyle="dashed", marker="o", markersize="1.5", alpha=0.5, label=col) for col in factor_influence.columns]
         ax.set_title("Evaluation Function")
         ax.invert_yaxis()
         ax.set_xlabel("E")
-        ax.axvline(0, color='r', linestyle=':', alpha=0.5)
-        # ax.legend(loc="lower right")
+        ax.legend(loc="lower right")
         ax.grid(True, which="both", linestyle="--", linewidth=0.5)
 
         return ax
