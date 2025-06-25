@@ -6,6 +6,7 @@
 
 ![PyPI - Version](https://img.shields.io/pypi/v/verfishd)
 ![Tests - Status](https://github.com/marine-data-science/verfishd/actions/workflows/pytest.yml/badge.svg)
+[![DOI](https://zenodo.org/badge/923014459.svg)](https://doi.org/10.5281/zenodo.15736406)
 
 ## Concept
 
