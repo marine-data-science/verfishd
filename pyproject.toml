@@ -15,22 +15,21 @@ classifiers = [
   "Typing :: Typed"
 ]
 license = "MSC"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "pandas >=2.2.3,<3.0.0",
+    "numpy >=2.2.2,<3.0.0",
+    "seabird >=0.12.0,<1.0.0",
+    "matplotlib >=3.10.0,<4.0.0",
+    "rich >=13.9.4,<14.0.0",
+    "setuptools >=78.1.1"
+]
 
 [project.urls]
 repository = "https://github.com/marine-data-science/verfishd"
 
 [tool.poetry]
 version = "0.0.1"  # base version
-
-[tool.poetry.dependencies]
-python = "^3.11"
-pandas = "^2.2.3"
-numpy = "^2.2.2"
-seabird = "^0.12.0"
-matplotlib = "^3.10.0"
-setuptools = "^78.1.1"
-rich = "^13.9.4"
-
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
