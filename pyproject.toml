@@ -32,7 +32,7 @@ repository = "https://github.com/marine-data-science/verfishd"
 version = "0.0.1"  # base version
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
+pytest = "^9.0.3"
 
 [build-system]
 requires = ["poetry-core"]
