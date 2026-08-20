@@ -44,6 +44,16 @@ def test_create_a_profile_from_file():
     assert isinstance(stimuli_profile, StimuliProfile), "StimuliProfile should be created from a file"
 
 
+def test_create_a_profile_from_cnv_file():
+    cnv_file = Path(__file__).parents[2] / "Examples" / "real_example" / "cnv" / "example.cnv"
+    stimuli_profile = StimuliProfile.read_from_cnv(cnv_file)
+
+    assert isinstance(stimuli_profile, StimuliProfile)
+    assert stimuli_profile.cnv is not None
+    assert stimuli_profile.data.index.name == "depth"
+    assert len(stimuli_profile.data) == 1460
+
+
 @pytest.mark.parametrize("stimuli, expected_exception", [
     (pd.Series([0.0, 0.1, 0.2, 0.3, 0.4, 0.5], index=[0, 1, 2, 3, 4, 5], name='oxygen'), None),  # Valid case
     (pd.Series([0.0, 0.1, 0.2, 0.3, 0.4, 0.5], index=[0, 1, 2, 3, 5, 6], name='oxygen'), ValueError("Stimuli series 'depth' values must match the existing data.")),  # Mismatched index

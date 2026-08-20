@@ -1,8 +1,9 @@
 from __future__ import annotations
 from os import PathLike
-from seabird import fCNV
 import pandas as pd
 from typing import Dict, Any, Optional
+
+from ._seabird_compat import load_fcnv
 
 
 class StimuliProfile:
@@ -10,9 +11,9 @@ class StimuliProfile:
 
     columns: pd.Index
     data: pd.DataFrame
-    cnv: Optional[fCNV]
+    cnv: Optional[Any]
 
-    def __init__(self, data: pd.DataFrame, cnv: Optional[fCNV] = None) -> None:
+    def __init__(self, data: pd.DataFrame, cnv: Optional[Any] = None) -> None:
         """
         Initialize the StimuliTable with given data.
 
@@ -111,7 +112,7 @@ class StimuliProfile:
         StimuliProfile
             The StimuliProfile instance
         """
-        cnv = fCNV(file_path)
+        cnv = load_fcnv()(file_path)
         data = cnv.as_DataFrame()
         if data is None:
             raise ValueError("No data found in file.")
